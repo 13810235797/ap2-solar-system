@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AP2 三维层级场景：太阳系 — 张容畅 2406100329 软件241</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #05060a;
+               font-family: "Microsoft YaHei", "Segoe UI", sans-serif; color: #ddd; }
+  #glcanvas { width: 100vw; height: 100vh; display: block; }
+  #panel {
+    position: absolute; top: 12px; left: 12px; width: 260px; max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    background: rgba(20, 24, 34, 0.88); border: 1px solid #333a4d;
+    border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.6;
+    backdrop-filter: blur(4px);
+  }
+  #panel h3 { margin: 0 0 6px; font-size: 14px; color: #ffd24a; }
+  #panel .sec { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #333a4d;
+                font-size: 11px; color: #8aa0c0; letter-spacing: 1px; }
+  #panel label { display: block; margin-top: 5px; }
+  #panel input[type=range] { width: 100%; }
+  #panel .btns { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  #panel button {
+    flex: 1 1 45px; background: #2a3350; color: #cfe0ff; border: 1px solid #44507a;
+    border-radius: 5px; padding: 4px 6px; font-size: 12px; cursor: pointer;
+  }
+  #panel button:hover { background: #3a4670; }
+  #panel button.reset { background: #5a3a3a; border-color: #7a5050; }
+  #hud {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    background: rgba(20,24,34,0.8); padding: 6px 16px; border-radius: 16px;
+    font-size: 13px; color: #9fd8e0;
+  }
+  #tips { position: absolute; bottom: 12px; right: 12px; font-size: 12px; color: #888;
+          text-align: right; line-height: 1.6; }
+</style>
+</head>
+<body>
+<canvas id="glcanvas"></canvas>
+
+<div id="panel">
+  <h3>太阳系 · 参数面板</h3>
+
+  <div class="sec">① 层级变换（必做）</div>
+  <label>地球轴倾角 <span id="ui-tilt-val">23.5°</span>
+    <input id="ui-tilt" type="range" min="0" max="45" step="0.5" value="23.5">
+  </label>
+  <label>月球轨道面倾角 <span id="ui-moonincl-val">5.14°</span>
+    <input id="ui-moonincl" type="range" min="0" max="30" step="0.1" value="5.14">
+  </label>
+  <label><input id="ui-moonorbit" type="checkbox" checked> 显示月球轨道线</label>
+
+  <div class="sec">② 动画速度</div>
+  <label>公转速度 <span id="ui-orbit-val">1.0×</span>
+    <input id="ui-orbit" type="range" min="0" max="3" step="0.1" value="1">
+  </label>
+  <label>自转速度 <span id="ui-spin-val">1.0×</span>
+    <input id="ui-spin" type="range" min="0" max="3" step="0.1" value="1">
+  </label>
+
+  <div class="sec">③ 光照环境项</div>
+  <label>环境光强度 <span id="ui-ambient-val">0.15</span>
+    <input id="ui-ambient" type="range" min="0" max="0.8" step="0.05" value="0.15">
+  </label>
+
+  <div class="sec">④ 投影（必做 O 键）</div>
+  <div class="btns">
+    <button id="proj-persp">透视</button>
+    <button id="proj-ortho">正交</button>
+  </div>
+
+  <div class="sec">⑤ 显示开关</div>
+  <label><input id="ui-orbits" type="checkbox" checked> 行星轨道线</label>
+  <label><input id="ui-asteroids" type="checkbox" checked> 小行星带（选做 E1）</label>
+  <label><input id="ui-labels" type="checkbox" checked> 行星名标签</label>
+  <label><input id="ui-wireframe" type="checkbox"> 线框模式</label>
+
+  <div class="sec">⑥ 视角（选做 E3）</div>
+  <div class="btns">
+    <button id="view-overview">全景</button>
+    <button id="view-close">近景</button>
+    <button id="view-top">俯瞰</button>
+    <button id="view-reset" class="reset">复位漫游</button>
+  </div>
+</div>
+
+<div id="hud">漫游中（空格暂停 / 拖拽接管视角 / O 切换投影）</div>
+<div id="tips">
+  拖拽：虚拟轨迹球旋转视角<br>
+  滚轮：缩放距离<br>
+  空格：漫游 暂停/继续　O：透视/正交
+</div>
+
+<script src="Common/MV.js"></script>
+<script src="Common/initShaders.js"></script>
+<script src="Common/webgl-utils.js"></script>
+<script src="js/shaders.js?v=22"></script>
+<script src="js/sphere.js?v=22"></script>
+<script src="js/textures.js?v=22"></script>
+<script src="js/scene.js?v=22"></script>
+<script src="js/camera.js?v=22"></script>
+<script src="js/main.js?v=22"></script>
+</body>
+</html>
