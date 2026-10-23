@@ -296,38 +296,37 @@
                 popMV();
             }
 
-            // 月球（手动矩阵）
-            if (k === 'earth') {
-                pushMV();
-                var RyMoon = rotate(moonAngle, [0, 1, 0]);       // 基本旋转：绕地球极轴公转
-                var RxIncl = rotate(state.moonInclination, [1, 0, 0]); // 基本旋转：轨道面扳斜
-                var TMoon = translate([p.moon.orbitRadius, 0, 0]);     // 基本平移：推到轨道半径
-                // 列向量约定：先 T 推出去，再 Rx 扳斜，最后 Ry 绕地轴公转 → 左乘顺序 Ry·Rx·T
-                var moonFrame = mult(RyMoon, mult(RxIncl, TMoon));
-                mv = mult(mv, moonFrame);
-                mv = mult(mv, rotate(spinAngle.earth * 0.5, [0, 1, 0]));
-                var mr = p.moon.radius;
-                mv = mult(mv, scale([mr, mr, mr]));
-                drawSphere('moon', false);
-                popMV();
+                // 月球（手动矩阵）
+                if (k === 'earth') {
+                    pushMV();
+                    var RyMoon = rotate(moonAngle, [0, 1, 0]);       // 基本旋转：绕地球极轴公转
+                    var RxIncl = rotate(state.moonInclination, [1, 0, 0]); // 基本旋转：把整个轨道面扳斜
+                    var TMoon = translate([p.moon.orbitRadius, 0, 0]);     // 基本平移：推到轨道半径
+                    // 列向量约定：先 T 推出去，再 Ry 绕地轴公转，最后 Rx 把整个轨道面扳斜 → Rx·Ry·T
+                    var moonFrame = mult(RxIncl, mult(RyMoon, TMoon));
+                    mv = mult(mv, moonFrame);
+                    mv = mult(mv, rotate(spinAngle.earth * 0.5, [0, 1, 0]));
+                    var mr = p.moon.radius;
+                    mv = mult(mv, scale([mr, mr, mr]));
+                    drawSphere('moon', false);
+                    popMV();
 
-                // 月球轨道线：让用户看见月球绕地球转，不是总贴在地球上
-                if (state.showMoonOrbit) {
-                    gl.useProgram(lineProg);
-                    gl.bindBuffer(gl.ARRAY_BUFFER, orbitBuf);
-                    gl.enableVertexAttribArray(lineLoc.aPosition);
-                    gl.vertexAttribPointer(lineLoc.aPosition, 3, gl.FLOAT, false, 0, 0);
-                    var mOrbit = mult(view,
-                        mult(rotate(orbitAngle.earth, [0,1,0]),
-                        mult(translate([p.orbitRadius,0,0]),
-                        mult(rotate(state.earthTilt,[1,0,0]),
-                        mult(rotate(state.moonInclination,[1,0,0]),
-                             scale([p.moon.orbitRadius,1,p.moon.orbitRadius]))))));
-                    gl.uniformMatrix4fv(lineLoc.uMVP, false, flatten(mult(proj, mOrbit)));
-                    gl.uniform4fv(lineLoc.uColor, [0.6, 0.75, 0.95, 0.7]);
-                    gl.drawArrays(gl.LINE_STRIP, 0, orbitCircle.length / 3);
+                    // 月球轨道线：与月球同一套变换（仅去掉 Ry，画整个轨道）
+                    if (state.showMoonOrbit) {
+                        gl.useProgram(lineProg);
+                        gl.bindBuffer(gl.ARRAY_BUFFER, orbitBuf);
+                        gl.enableVertexAttribArray(lineLoc.aPosition);
+                        gl.vertexAttribPointer(lineLoc.aPosition, 3, gl.FLOAT, false, 0, 0);
+                        var mOrbit = mult(view,
+                            mult(rotate(orbitAngle.earth, [0,1,0]),
+                            mult(translate([p.orbitRadius,0,0]),
+                            mult(rotate(state.moonInclination,[1,0,0]),
+                                 scale([p.moon.orbitRadius,1,p.moon.orbitRadius])))));
+                        gl.uniformMatrix4fv(lineLoc.uMVP, false, flatten(mult(proj, mOrbit)));
+                        gl.uniform4fv(lineLoc.uColor, [0.6, 0.75, 0.95, 0.7]);
+                        gl.drawArrays(gl.LINE_STRIP, 0, orbitCircle.length / 3);
+                    }
                 }
-            }
 
             popMV();
         });
